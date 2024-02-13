@@ -95,7 +95,7 @@ return {
 		lspconfig["svelte"].setup({
 			capabilities = capabilities,
 			on_attach = function(client, bufnr)
-				on_attach(client, bufnr)
+				on_attach(bufnr)
 
 				vim.api.nvim_create_autocmd("BufWritePost", {
 					pattern = { "*.js", "*.ts" },
