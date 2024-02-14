@@ -6,9 +6,6 @@ return {
 		{ "antosha417/nvim-lsp-file-operations", config = true },
 	},
 	config = function()
-		local lspconfig = require("lspconfig")
-		local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
 		local keymap = vim.keymap
 
 		local opts = { noremap = true, silent = true }
@@ -34,6 +31,9 @@ return {
 			opts.desc = "Show line error dialog"
 			keymap.set("n", "gl", vim.diagnostic.open_float, opts) -- show diagnostics for line in a dialog
 
+			opts.desc = "Show buffer type definitions"
+			keymap.set("n", "<leader>td", vim.lsp.buf.type_definition, opts) -- show buffer type definitions
+
 			opts.desc = "See available code actions"
 			keymap.set({ "n", "v" }, "<c-ca>", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
 
@@ -57,13 +57,15 @@ return {
 
 			opts.desc = "Restart LSP"
 			keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+
+			opts.desc = "Show signature help"
+			keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts)
 		end
 
 		-- used to enable autocompletion (assign to every lsp server config)
-		local capabilities = cmp_nvim_lsp.default_capabilities()
+		local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 		-- Change the Diagnostic symbols in the sign column (gutter)
-		-- (not in youtube nvim video)
 		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
 		for type, icon in pairs(signs) do
 			local hl = "DiagnosticSign" .. type
@@ -71,78 +73,49 @@ return {
 		end
 
 		-- configure html server
-		lspconfig["html"].setup({
+		require("lspconfig").html.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
 
 		-- configure typescript server with plugin
-		lspconfig["tsserver"].setup({
+		require("lspconfig").tsserver.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
 
 		-- configure css server
-		lspconfig["cssls"].setup({
+		require("lspconfig").cssls.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
 
 		-- configure go lang server
-		lspconfig["gopls"].setup({
+		require("lspconfig").gopls.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
 
-		lspconfig["golangci_lint_ls"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-		lspconfig["gopls"].setup({
+		require("lspconfig").golangci_lint_ls.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
 
 		-- configure tailwindcss server
-		lspconfig["tailwindcss"].setup({
+		require("lspconfig").tailwindcss.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
-		})
-
-		-- configure svelte server
-		lspconfig["svelte"].setup({
-			capabilities = capabilities,
-			on_attach = function(client, bufnr)
-				on_attach(bufnr)
-
-				vim.api.nvim_create_autocmd("BufWritePost", {
-					pattern = { "*.js", "*.ts" },
-					callback = function(ctx)
-						if client.name == "svelte" then
-							client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.file })
-						end
-					end,
-				})
-			end,
 		})
 
 		-- configure prisma orm server
-		lspconfig["prismals"].setup({
+		require("lspconfig").prismals.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
-			autostart = true,
-		})
-
-		-- configure graphql language server
-		lspconfig["graphql"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
 			autostart = true,
 		})
 
 		-- configure emmet language server
-		lspconfig["emmet_ls"].setup({
+		require("lspconfig").emmet_ls.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 			filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
@@ -150,14 +123,14 @@ return {
 		})
 
 		-- configure python server
-		lspconfig["pyright"].setup({
+		require("lspconfig").pyright.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 			autostart = true,
 		})
 
 		-- configure lua server (with special settings)
-		lspconfig["lua_ls"].setup({
+		require("lspconfig").lua_ls.setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 			autostart = true,
