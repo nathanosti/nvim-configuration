@@ -31,8 +31,11 @@ return {
 			opts.desc = "Show LSP type definitions"
 			keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
 
+			opts.desc = "Show line error dialog"
+			keymap.set("n", "gl", vim.diagnostic.open_float, opts) -- show diagnostics for line in a dialog
+
 			opts.desc = "See available code actions"
-			keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
+			keymap.set({ "n", "v" }, "<c-ca>", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
 
 			opts.desc = "Smart rename"
 			keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
@@ -81,6 +84,21 @@ return {
 
 		-- configure css server
 		lspconfig["cssls"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
+		})
+
+		-- configure go lang server
+		lspconfig["gopls"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
+		})
+
+		lspconfig["golangci_lint_ls"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
+		})
+		lspconfig["gopls"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
